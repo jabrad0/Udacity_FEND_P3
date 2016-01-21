@@ -1,4 +1,7 @@
 $(".winnerBox").hide();
+
+var PLAYER_START_X = 300;
+var PLAYER_START_Y = 580;
 //------------------------------------------------------
 //------- Enemy Constructor and Methods ----------------
 //------------------------------------------------------
@@ -33,7 +36,7 @@ Enemy.prototype.update = function(dt) {
  // also we call a newRandomSpeed() in order to change the speed when
  // the enemy bugs starts from the left again.
  if (this.x > 700) {
-  this.x = -70
+  this.x = -70;
   this.newRandomSpeed();
  }
 };
@@ -48,13 +51,12 @@ Enemy.prototype.newRandomSpeed = function() {
 //-----------------------------------------------
 //------- Player Constructor and Methods --------
 //-----------------------------------------------
-var playerStartX = 300;
-var playerStartY = 580;
 //Player constructor function
 var Player = function() {
  // Variables applied to each of our instances go here.
- this.x = playerStartX;
- this.y = playerStartY;
+ this.x = PLAYER_START_X;
+ this.y = PLAYER_START_Y;
+ this.collision = false;
  this.sprite = 'images/char-horn-girl.png';
 };
 
@@ -95,28 +97,31 @@ Player.prototype.handleInput = function(direction) {
 };
 
 Player.prototype.gameOver = function() {
- $(".winnerBox").show();
- $("#playAgain").on('click', function() {
+  // the scope of 'this' changes in the click listener callback fn.
+  var self = this; // so "alias this"
+  //DO NOT directly access the instance 'player' in its class definition,
+  //(i.e. player.startOver()).
+  $(".winnerBox").show();
+  $("#playAgain").on('click', function() {
   $(".winnerBox").hide();
-  player.startOver();
- });
+  self.startOver();
+  });
 }
 
 // If the player is within range of an enemy bug, reset the game
 //unless the player is behind a rock then no collision will happen.
 Player.prototype.testCollision = function() {
- collision = true;
+ this.collision = true;
  for (var i = 0; i < allRocks.length; i++) {
   if (this.x < allRocks[i].x + 30 &&
    this.x + 30 > allRocks[i].x &&
    this.y < allRocks[i].y + 30 &&
    this.y + 30 > allRocks[i].y) {
-   collision = false;
-   console.log(collision);
+   this.collision = false;
   }
  }
  for (var i = 0; i < allEnemies.length; i++) {
-  if (collision === true && this.x < allEnemies[i].x + 30 &&
+  if (this.collision === true && this.x < allEnemies[i].x + 30 &&
    this.x + 30 > allEnemies[i].x &&
    this.y < allEnemies[i].y + 30 &&
    this.y + 30 > allEnemies[i].y) {
@@ -126,9 +131,8 @@ Player.prototype.testCollision = function() {
 };
 
 Player.prototype.startOver = function() {
- //collision = false;
- this.x = playerStartX;
- this.y = playerStartY;
+ this.x = PLAYER_START_X;
+ this.y = PLAYER_START_Y;
 };
 
 //---------------------------------------------
