@@ -82,7 +82,7 @@
      */
     function update(dt) {
         updateEntities(dt);
-      //  checkCollisions(arrayOfRocks, arrayOfEnemies);
+        checkCollisions(arrayOfRocks, arrayOfEnemies);
     }
 
     /* This is called by the update function and loops through all of the
