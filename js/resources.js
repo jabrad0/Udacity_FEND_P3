@@ -3,7 +3,7 @@
  * image files so that they can be used within your game. It also includes
  * a simple "caching" layer so it will reuse cached images if you attempt
  * to load the same image multiple times.
- */ 
+ */
 (function() {
     var resourceCache = {};
     var loading = [];

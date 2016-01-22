@@ -1,8 +1,19 @@
+* {
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+}
 body {
     text-align: center;
     background-color: black;
 }
-div {
+#title {
+  font-size: 2em;
+  position: relative;
+  color: royalblue;
+  margin-top: 10px;
+
+}
+#win {
     position: absolute;
     top: 30%;
     left: 50%;
@@ -25,7 +36,7 @@ div {
 button {
     position: absolute;
     top: 30%;
-    left: 18%;
+    left: 25%;
     background: #68B25B;
     box-shadow: 0 3px 0 0 #6A845F;
     color: #fff;

@@ -1,7 +1,20 @@
 $(".winnerBox").hide();
-
+var GAME_OVER = false;
 var PLAYER_START_X = 300;
 var PLAYER_START_Y = 580;
+//------------------------------------------------------
+//------- Parent or SuperCLass ----------------
+//------------------------------------------------------
+var Character = function() {
+};
+
+Character.prototype.render = function() {
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+//Original code used for rendering each Class:
+//Enemy.prototype.render = function() {
+//  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+//};
 //------------------------------------------------------
 //------- Enemy Constructor and Methods ----------------
 //------------------------------------------------------
@@ -11,17 +24,16 @@ var Enemy = function(enemyStartX, enemyStartY, speed) {
  // These variables specify how each instance will be different.
  //Properties of the objects
  //These values are passed from instantiating the object down below
+ Character.call(this);
  this.x = enemyStartX;
  this.y = enemyStartY;
  this.speed = speed;
  this.sprite = 'images/enemy-bug.png';
 };
+Enemy.prototype = Object.create(Character.prototype);
+Enemy.prototype.constructor = Enemy;
 // Below are how all instances of the class Enemy should be similar
 //stored as properties of the prototype object, methods on the object
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
- ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
 
 // Update the enemy's position (required method for game)
 // Parameter: dt, a time delta between ticks
@@ -54,85 +66,64 @@ Enemy.prototype.newRandomSpeed = function() {
 //Player constructor function
 var Player = function() {
  // Variables applied to each of our instances go here.
+ Character.call(this);
  this.x = PLAYER_START_X;
  this.y = PLAYER_START_Y;
  this.collision = false;
  this.sprite = 'images/char-horn-girl.png';
 };
-
-// Draw the player on the screen, required method for game
-Player.prototype.render = function() {
- ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+Player.prototype = Object.create(Character.prototype);
+Player.prototype.constructor = Player;
 
 // Update the player's position, required method for game
 // Parameter: dt, a time delta between ticks
-Player.prototype.update = function(dt) {
- // You should multiply any movement by the dt parameter
- // which will ensure the game runs at the same speed for
- // all computers.
- this.testCollision();
-};
+// You should multiply any movement by the dt parameter
+// which will ensure the game runs at the same speed for
+// all computers.
+Player.prototype.update = function(dt) {};
 
 Player.prototype.handleInput = function(direction) {
- if (direction === "left" && this.x > -62) {
-  this.x -= 20;
- } else if (direction === "left" && this.x <= -62) { //lets sprite wrap left
-  this.x = 695;
- }
- if (direction === "right" && this.x < 695) {
-  this.x += 20;
- } else if (direction === "right" && this.x >= 695) { //lets sprite wrap right
-  this.x = 0;
- }
- if (direction === "up" && this.y > 8) {
-  this.y -= 20;
- }
- if (direction === "down" && this.y < 580) {
-  this.y += 20;
- }
- if (direction === "up" && this.y <= 8) {
-  this.gameOver();
- }
-};
+ if (GAME_OVER === false){
+    if (direction === "left" && this.x > -62) {
+    this.x -= 20;
+   } else if (direction === "left" && this.x <= -62) { //lets sprite wrap left
+    this.x = 695;
+   }
+   if (direction === "right" && this.x < 695) {
+    this.x += 20;
+   } else if (direction === "right" && this.x >= 695) { //lets sprite wrap right
+    this.x = 0;
+   }
+   if (direction === "up" && this.y > 8) {
+    this.y -= 20;
+   }
+   if (direction === "down" && this.y < 580) {
+    this.y += 20;
+   }
+   if (direction === "up" && this.y <= 8) {
+    this.gameOver();
+   }
+  };
+}
 
 Player.prototype.gameOver = function() {
+  GAME_OVER = true;
   // the scope of 'this' changes in the click listener callback fn.
   var self = this; // so "alias this"
   //DO NOT directly access the instance 'player' in its class definition,
   //(i.e. player.startOver()).
   $(".winnerBox").show();
+
   $("#playAgain").on('click', function() {
   $(".winnerBox").hide();
   self.startOver();
   });
 }
 
-// If the player is within range of an enemy bug, reset the game
-//unless the player is behind a rock then no collision will happen.
-Player.prototype.testCollision = function() {
- this.collision = true;
- for (var i = 0; i < allRocks.length; i++) {
-  if (this.x < allRocks[i].x + 30 &&
-   this.x + 30 > allRocks[i].x &&
-   this.y < allRocks[i].y + 30 &&
-   this.y + 30 > allRocks[i].y) {
-   this.collision = false;
-  }
- }
- for (var i = 0; i < allEnemies.length; i++) {
-  if (this.collision === true && this.x < allEnemies[i].x + 30 &&
-   this.x + 30 > allEnemies[i].x &&
-   this.y < allEnemies[i].y + 30 &&
-   this.y + 30 > allEnemies[i].y) {
-   this.startOver();
-  }
- }
-};
-
 Player.prototype.startOver = function() {
- this.x = PLAYER_START_X;
- this.y = PLAYER_START_Y;
+  GAME_OVER = false;
+  this.x = PLAYER_START_X;
+  this.y = PLAYER_START_Y;
 };
 
 //---------------------------------------------
@@ -140,15 +131,16 @@ Player.prototype.startOver = function() {
 //---------------------------------------------
 
 var Rock = function(rockX, rockY) {
+ Character.call(this);
  this.x = rockX;
  this.y = rockY;
  this.sprite = 'images/Rock.png';
 };
+Rock.prototype = Object.create(Character.prototype);
+Rock.prototype.constructor = Rock;
 
-Rock.prototype.render = function() {
- ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+Rock.prototype.update = function(dt) {
 };
-Rock.prototype.update = function(dt) {};
 
 //---------------------------------------
 //------- Instantiate the Objects -------
@@ -156,7 +148,7 @@ Rock.prototype.update = function(dt) {};
 
 // Instantiate the rock objects:
 var allRocks = [new Rock(100, 75), new Rock(200, 300), new Rock(500, 140)];
-
+var arrayOfRocks = allRocks
 // Place all enemy objects in an array called 'allEnemies'
 var allEnemies = [];
 //When we instantiate an enemy object, we must pass it an initial speed
@@ -166,6 +158,8 @@ for (var i = 0; i < 5; i++) {
  var firstMovingSpeed = Math.floor((Math.random() * 5 + 1) * 80);
  allEnemies.push(new Enemy(60, 60 * (i + 1), firstMovingSpeed));
 }
+var arrayOfEnemies = allEnemies
+
 //Next step is the Enemy constructor function (line 4), the parameters
 //above (new Enemy(x,y,speed)) are passed to the constructor to build our object.
 
@@ -176,14 +170,15 @@ var player = new Player();
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 //http://keycode.info/
-document.addEventListener('keyup', function(e) {
- var allowedKeys = {
-  37: 'left',
-  38: 'up',
-  39: 'right',
-  40: 'down'
- };
 
- player.handleInput(allowedKeys[e.keyCode]);
+  document.addEventListener('keyup', function(e) {
+   var allowedKeys = {
+    37: 'left',
+    38: 'up',
+    39: 'right',
+    40: 'down'
+   };
 
-});
+   player.handleInput(allowedKeys[e.keyCode]);
+
+  });

@@ -82,7 +82,7 @@
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+      //  checkCollisions(arrayOfRocks, arrayOfEnemies);
     }
 
     /* This is called by the update function and loops through all of the
@@ -102,6 +102,26 @@
             rock.update(dt);
         });
     }
+
+    function checkCollisions(obstacle1, obstacle2) {
+      player.collision = true;
+      for (var i = 0; i < obstacle1.length; i++) {
+        if (player.x < obstacle1[i].x + 30 &&
+         player.x + 30 > obstacle1[i].x &&
+         player.y < obstacle1[i].y + 30 &&
+         player.y + 30 > obstacle1[i].y) {
+         player.collision = false;
+        }
+       }
+       for (var i = 0; i < obstacle2.length; i++) {
+        if (player.collision === true && player.x < obstacle2[i].x + 30 &&
+         player.x + 30 > obstacle2[i].x &&
+         player.y < obstacle2[i].y + 30 &&
+         player.y + 30 > obstacle2[i].y) {
+         player.startOver();
+        }
+       }
+    };
 
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -161,6 +181,7 @@
         });
 
         player.render();
+
         allRocks.forEach(function(rock) {
             rock.render();
         });
