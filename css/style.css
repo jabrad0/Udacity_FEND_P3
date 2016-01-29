@@ -6,11 +6,32 @@ body {
     text-align: center;
     background-color: black;
 }
+
+h3, p {
+  color: white;
+  display: inline;
+}
+
+.objective {
+  line-height: 1.5em;
+  margin-left: 100px;
+  margin-right: 100px;
+  margin-bottom: 7px;
+}
+
+.play {
+  line-height: 1.3em;
+  margin-left: 200px;
+  margin-right: 200px;
+
+}
+
 #title {
   font-size: 2em;
   position: relative;
   color: royalblue;
   margin-top: 10px;
+  margin-bottom: 10px;
 
 }
 #win {
